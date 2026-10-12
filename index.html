@@ -12,25 +12,25 @@
     <title>Donation</title>
 </head>
 <body>
-    <header>
-        <div class="container-fluid  " style="background-color: var(--primary);">
-            <div class="row justify-content-around text-white align-items-center">
-                <div class="d-md-flex col-md-6 gap-5 d-none mt-2">
-                    <!-- <div class="col-md-3 mt-2"> -->
-                        <p style="font-size: 13px;">MAIL: contact@ourcharity.com</p>                
-                    <!-- </div> -->
-                    <!-- <div class="col-md-3 mt-2"> -->
-                        <p style="font-size: 13px;">PHONE: +24 3772 120 091 / +56452 4567</p>                
-                    <!-- </div> -->
-                </div>
-                <div class="col-md-auto d-block text-md-start text-center">
-                   <button class="bg-dark h-100 text-white px-3 py-3 border-0">Donate Now</button>              
+    <header id="top">
+        <div class="topbar">
+            <div class="container-lg">
+                <div class="row align-items-center justify-content-between gy-2">
+                    <div class="col-lg-8 col-md-7 d-none d-md-block">
+                        <div class="topbar-inner">
+                            <span class="topbar-pill"><i class="fas fa-envelope"></i> homecharity.co.ke</span>
+                            <span class="topbar-pill"><i class="fas fa-phone-alt"></i> +254700587281</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-5 text-md-end text-center">
+                        <a href="donate.html" class="topbar-donate">Donate Now</a>
+                    </div>
                 </div>
             </div>
         </div>
         <nav class="navbar navbar-expand-lg py-md-0 py-4 p-0 ">
             <div class="container">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="#top">
                     <img src="images/logo.png" alt="">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -40,22 +40,25 @@
                 <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
                     <ul class="navbar-nav ">
                         <li class="nav-item">
-                            <a class="nav-link active text-black fw-bold mx-3 " style="font-size: 14px;  padding: 30px 0;" aria-current="page" href="#">Home</a>
+                            <a class="nav-link active text-black fw-bold mx-3 " style="font-size: 14px;  padding: 30px 0;" aria-current="page" href="#top">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;"  aria-current="page" href="#">About Us</a>
+                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#about">About Us</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-black fw-bold mx-3 " style="font-size: 14px; padding: 30px 0;"  aria-current="page" href="#">Causes</a>
+                            <a class="nav-link active text-black fw-bold mx-3 " style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#cause">Causes</a>
                         </li>
                         <li class="nav-item ">
-                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;"  aria-current="page" href="#">Gallery</a>
+                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#news">Gallery</a>
                         </li>
                         <li class="nav-item ">
-                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;"  aria-current="page" href="#">News</a>
+                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#news">News</a>
                         </li>
                         <li class="nav-item ">
-                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;"  aria-current="page" href="#">Contact</a>
+                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#testimonials">Testimonials</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link active text-black fw-bold mx-3" style="font-size: 14px; padding: 30px 0;" aria-current="page" href="#footer-contact">Contact</a>
                         </li>
                     </ul>
                 </div>
@@ -66,10 +69,10 @@
     <main>
         <div class="container">
             <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
-                <h1 class=" p-4" style="font-size: 55px; min-width: 400px;">Donate For a Better World</h1>
-                <p class="p-3 mb-5 fw-medium" style="max-width: 500px; margin: auto;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quod saepe aut itaque tempore blanditiis obcaecati architecto accusantium cum iste?</p>
-                <button class="rounded-5 p-3 px-5 btn-fill" style="border: 1px solid var(--primary);">Donate Now</button>
-                <button class="rounded-5 p-3 px-5 btn-nofill" style="border: 2px solid var(--primary);">Read More</button>
+                <h1 class="p-4">Give for a Better World</h1>
+                <p class="p-3 mb-5 fw-medium" style="max-width: 500px; margin: auto;">Your generosity can provide food, shelter, education, and hope to families and children facing hardship every day.</p>
+                <a href="donate.html" class="rounded-5 p-3 px-5 btn-fill text-decoration-none d-inline-block" style="border: 1px solid var(--primary);">Donate Now</a>
+                <a href="#about" class="rounded-5 p-3 px-5 btn-nofill text-decoration-none d-inline-block" style="border: 2px solid var(--primary);">Learn More</a>
             </div>
         </div>
     </main>
@@ -81,21 +84,21 @@
                     <div class="bg-secondary bg-opacity-25 py-5 rounded-5 box selected px-3">
                         <img src="images/hands-white.png" alt="">
                         <h4 class="fw-bold py-3">Become a Volunteer</h4>
-                        <p class="text-white" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris quis aliquam.</p>
+                        <p class="text-white" style="font-size: 14px;">Join our community and help bring support, care, and relief to families in need.</p>
                     </div>
                 </div>
                 <div class="col-md-4 ">
                     <div class="bg-secondary bg-opacity-25 py-5 rounded-5 box  px-3">
                         <img src="images/donation-white.png" alt="">
-                        <h4 class="fw-bold py-3">Help Other People</h4>
-                        <p class="text-secondary" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris quis aliquam.</p>
+                        <h4 class="fw-bold py-3">Help Others</h4>
+                        <p class="text-secondary" style="font-size: 14px;">Support life-changing initiatives that restore dignity, safety, and opportunity for vulnerable people.</p>
                     </div>
                 </div>
                 <div class="col-md-4 ">
                     <div class="bg-secondary bg-opacity-25 py-5 rounded-5 box px-3">
                         <img src="images/charity-white.png" alt="">
-                        <h4 class="fw-bold py-3">Online Conference</h4>
-                        <p class="text-secondary" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris quis aliquam.</p>
+                        <h4 class="fw-bold py-3">Online Outreach</h4>
+                        <p class="text-secondary" style="font-size: 14px;">Engage with meaningful conversations and awareness campaigns that drive long-term social impact.</p>
                     </div>
                 </div>
             </div>
@@ -108,13 +111,10 @@
             <div class="row align-items-center py-5">
                 <div class="col-lg-6 order-lg-0 order-1">
                     <div class="heading text-white my-3">
-                        <h2 class="fs-1">Welcome to our Charity</h2>
+                        <h2 class="fs-1">Welcome to Our Charity</h2>
                     </div>
-                    <p class="text-white opacity-75 py-5" style="font-size: 14px; line-height: 1.8;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris quis aliquam. Lorem ipsum
-                    dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer accumsan sodales
-                    odio, id tempus velit ullamcorper id. Quisque at erat eu libero consequat tempus. Quisque molestie convallis tempus. Ut
-                    semper purus metus, a euismod sapien sodales ac. Duis viverra eleifend fermentum</p>
-                    <button class="rounded-5 p-3 px-5 btn-fill border-0">Read More</button>
+                    <p class="text-white opacity-75 py-5" style="font-size: 14px; line-height: 1.8;">We are a compassionate organization committed to helping children, families, and communities thrive through education, relief, and access to essential care. Every donation creates real impact and brings hope to people facing difficult circumstances.</p>
+                    <a href="#cause" class="rounded-5 p-3 px-5 btn-fill border-0 text-decoration-none d-inline-block">Learn More</a>
                 </div>
                 <div class="col-lg-6 order-lg-1 order-0 my-3">
                     <img src="images/children.jpg"  style="max-width: 100%;" alt="">
@@ -133,39 +133,39 @@
                     <div class="d-flex  gap-4 my-5">
                         <img src="images/event-1.jpg" style="max-width: 100%;" alt="">
                         <div>
-                            <h6  class="fw-bold m-0">Fundraiser for Kids</h6>
+                            <h6  class="fw-bold m-0">School Support Drive</h6>
                             <div class="mb-3">
-                                <span class="fw-medium" style="font-size: 11px;">Aug 25, 2018  </span>
+                                <span class="fw-medium" style="font-size: 11px;">Aug 25, 2026  </span>
                                 <span class="px-2">|</span>
-                                <span class="fw-medium" style="font-size: 11px;"> Ball Room New York</span>
+                                <span class="fw-medium" style="font-size: 11px;"> Nairobi, Kenya</span>
                             </div>
-                            <p class="text-secondary" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris.</p>
+                            <p class="text-secondary" style="font-size: 14px;">Help us provide school supplies and essential support for children in need.</p>
                             <a href="" class="text-decoration-none" style="color: var(--primary); font-size: 15px;">Read More</a>
                         </div>
                     </div>
                     <div class="d-flex gap-4 my-5">
                         <img src="images/event-2.jpg" style="max-width: 100%;" alt="">
                         <div>
-                            <h6  class="fw-bold m-0">Fundraiser for Kids</h6>
+                            <h6  class="fw-bold m-0">Community Food Relief</h6>
                             <div class="mb-3">
-                                <span class="fw-medium" style="font-size: 11px;">Aug 25, 2018  </span>
+                                <span class="fw-medium" style="font-size: 11px;">Sep 10, 2026  </span>
                                 <span class="px-2">|</span>
-                                <span class="fw-medium" style="font-size: 11px;"> Ball Room New York</span>
+                                <span class="fw-medium" style="font-size: 11px;"> Community Hall</span>
                             </div>
-                            <p class="text-secondary" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris.</p>
+                            <p class="text-secondary" style="font-size: 14px;">Join us in distributing food and care packages to vulnerable households.</p>
                             <a href="" class="text-decoration-none" style="color: var(--primary); font-size: 15px;">Read More</a>
                         </div>
                     </div>
                     <div class="d-flex gap-4 my-5">
                         <img src="images/event-3.jpg" style="max-width: 100%;" alt="">
                         <div>
-                            <h6  class="fw-bold m-0">Fundraiser for Kids</h6>
+                            <h6  class="fw-bold m-0">Family Wellness Day</h6>
                             <div class="mb-3">
-                                <span class="fw-medium" style="font-size: 11px;">Aug 25, 2018  </span>
+                                <span class="fw-medium" style="font-size: 11px;">Oct 02, 2026  </span>
                                 <span class="px-2">|</span>
-                                <span class="fw-medium" style="font-size: 11px;"> Ball Room New York</span>
+                                <span class="fw-medium" style="font-size: 11px;"> Town Center</span>
                             </div>
-                            <p class="text-secondary" style="font-size: 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris.</p>
+                            <p class="text-secondary" style="font-size: 14px;">A day of outreach, support, and care for children and families in need.</p>
                             <a href="" class="text-decoration-none" style="color: var(--primary); font-size: 15px;">Read More</a>
                         </div>
                     </div>
@@ -180,15 +180,14 @@
                                 <img src="images/children2.jpg" class="w-50 image" alt="">
                                
                             <div>
-                                <h6 class="fw-bold m-0">Fundraiser for Kids</h6>
+                                <h6 class="fw-bold m-0">Education for Every Child</h6>
                                 <div class="mb-3">
-                                    <span class="fw-medium" style="font-size: 11px;">Aug 25, 2018 </span>
+                                    <span class="fw-medium" style="font-size: 11px;">Sep 14, 2026 </span>
                                     <span class="px-2">|</span>
-                                    <span class="fw-medium" style="font-size: 11px;"> Ball Room New York</span>
+                                    <span class="fw-medium" style="font-size: 11px;"> Nairobi</span>
                                 </div>
-                                <p class="text-secondary py-3 " style="font-size: 14px; line-height: 1.8;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestib ulum mauris. Lorem ipsum dolor sit amet,
-                                consectetur.</p>
-                                <button class="rounded-5 p-3 px-5 btn-fill border-0">Read More</button>
+                                <p class="text-secondary py-3 " style="font-size: 14px; line-height: 1.8;">We are supporting school access, writing materials, and mentorship so children can grow with dignity, confidence, and opportunity.</p>
+                                <a href="#cause" class="rounded-5 p-3 px-5 btn-fill border-0 text-decoration-none d-inline-block">Learn More</a>
                             </div>
                         </div>
                         <div class="py-4">
@@ -197,8 +196,8 @@
                             </p>
                         </div>
                         <d class="d-flex justify-content-between text-secondary">
-                            <p>Raised: $56 880</p>
-                            <p class="text-end">Goal: $70 000</p>
+                            <p>Raised: $56,880</p>
+                            <p class="text-end">Goal: $70,000</p>
                         </div>
                     </div>
                 </div>
@@ -217,12 +216,12 @@
                         <div class="image position-relative">
                             <img src="images/children6.jpg " class="rounded-top d-block " style="max-width: 100%;" alt="">
                             <div style="transition: .5s;" class="overlay bg-black bg-opacity-75 w-100 h-100 position-absolute top-0 opacity-0 d-flex justify-content-center align-items-center">
-                                <button class="rounded-5 p-3 px-5 btn-fill border-0 ">Dontae Now</button>
+                                <a href="donate.html" class="rounded-5 p-3 px-5 btn-fill border-0 text-decoration-none d-inline-block">Donate Now</a>
                             </div>
                         </div>
                         <div class="p-4">
-                            <h6 class="fw-bold">Bring Water To The Children</h6>
-                            <p class="py-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. In consequatur possimus ut. Perspiciatis?</p>
+                            <h6 class="fw-bold">Clean Water for Children</h6>
+                            <p class="py-3">We are helping provide safe, clean water access to children and families in underserved communities.</p>
                             <div class="py-4">
                                 <p class="w-100 bg-secondary-subtle " style="height: 5px;">
                                     <span class="percent" percent="92%"
@@ -241,12 +240,12 @@
                         <div class="image position-relative">
                             <img src="images/children4.jpg " class="rounded-top d-block " style="max-width: 100%;" alt="">
                             <div style="transition: .5s;" class="overlay bg-black bg-opacity-75 w-100 h-100 position-absolute top-0 opacity-0 d-flex justify-content-center align-items-center">
-                                <button class="rounded-5 p-3 px-5 btn-fill border-0 ">Dontae Now</button>
+                                <a href="donate.html" class="rounded-5 p-3 px-5 btn-fill border-0 text-decoration-none d-inline-block">Donate Now</a>
                             </div>
                         </div>
                         <div class="p-4">
-                            <h6 class="fw-bold">Education For All</h6>
-                            <p class="py-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. In consequatur possimus ut. Perspiciatis?</p>
+                            <h6 class="fw-bold">Education for All</h6>
+                            <p class="py-3">Support school fees, supplies, and mentorship so every child can learn in a safe environment.</p>
                             <div class="py-4">
                                 <p class="w-100 bg-secondary-subtle " style="height: 5px;">
                                     <span class="percent" percent="63%"
@@ -265,12 +264,12 @@
                         <div class="image position-relative">
                             <img src="images/children7.jpg " class="rounded-top d-block " style="max-width: 100%;" alt="">
                             <div style="transition: .5s;" class="overlay bg-black bg-opacity-75 w-100 h-100 position-absolute top-0 opacity-0 d-flex justify-content-center align-items-center">
-                                <button class="rounded-5 p-3 px-5 btn-fill border-0 ">Dontae Now</button>
+                                <a href="donate.html" class="rounded-5 p-3 px-5 btn-fill border-0 text-decoration-none d-inline-block">Donate Now</a>
                             </div>
                         </div>
                         <div class="p-4">
-                            <h6 class="fw-bold">Help The Poor</h6>
-                            <p class="py-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. In consequatur possimus ut. Perspiciatis?</p>
+                            <h6 class="fw-bold">Support the Poor</h6>
+                            <p class="py-3">Your support helps provide food, shelter, and practical care to families living in poverty.</p>
                             <div class="py-4">
                                 <p class="w-100 bg-secondary-subtle " style="height: 5px;">
                                     <span class="percent" percent="72%"
@@ -292,8 +291,8 @@
         <div class="container">
             <div class="row align-items-end gy-md-0 gy-5" style="margin: 100px 0;">
                 <div class="heading col-lg-6 " >
-                    <h2 class="pb-2 mb-4" style="line-height: 1.8;">We love to help all the children that have problems in the world. After 15 years we have many goals achieved.</h2>
-                    <p class="text-secondary text-md-start text-center">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Doloribus eum, expedita atque ipsum minus ex exercitationem, quia, labore accusantium perferendis molestiae soluta voluptas aliquid delectus suscipit asperiores molestias numquam velit!</p>
+                    <h2 class="pb-2 mb-4" style="line-height: 1.8;">We are dedicated to helping children and families facing hardship across the world, and after 15 years, we have achieved many meaningful milestones.</h2>
+                    <p class="text-secondary text-md-start text-center">Every contribution supports a better future through care, education, food security, and community development that responds to real needs.</p>
                 </div>
                 <div class="col-lg-6">
                     <div class="d-flex flex-column flex-md-row justify-content-around text-center">
@@ -310,8 +309,57 @@
                         <div>
                             <img src="images/dove.png" alt="">
                             <h3 class="py-3 fs-1">256</h3>
-                            <p class="text-secondary " style="font-size: 15px;">Volunteeres</p>
+                            <p class="text-secondary " style="font-size: 15px;">Volunteers</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials">
+        <div class="container-md">
+            <div class="heading text-center my-3">
+                <h2 class="fs-1">Testimonials</h2>
+            </div>
+            <div class="row g-4 mt-3">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-head">
+                            <div class="testimonial-avatar">AL</div>
+                            <div>
+                                <h5>Alice M.</h5>
+                                <span>Volunteer</span>
+                            </div>
+                        </div>
+                        <p>“I saw how quickly our support reached families in need. Every donation truly gives hope and restores dignity.”</p>
+                        <button type="button" class="testimonial-btn" data-name="Alice M." data-role="Volunteer" data-quote="I saw how quickly our support reached families in need. Every donation truly gives hope and restores dignity. It is inspiring to witness real impact in such a short time.">Read Story</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-head">
+                            <div class="testimonial-avatar alt">JT</div>
+                            <div>
+                                <h5>James T.</h5>
+                                <span>Donor</span>
+                            </div>
+                        </div>
+                        <p>“This charity made giving simple, safe, and meaningful. I know my contribution is helping children access care and education.”</p>
+                        <button type="button" class="testimonial-btn" data-name="James T." data-role="Donor" data-quote="This charity made giving simple, safe, and meaningful. I know my contribution is helping children access care and education. It gives me confidence that my support is creating lasting change.">Read Story</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mx-md-auto mx-lg-0">
+                    <div class="testimonial-card">
+                        <div class="testimonial-head">
+                            <div class="testimonial-avatar">RM</div>
+                            <div>
+                                <h5>Rose M.</h5>
+                                <span>Parent</span>
+                            </div>
+                        </div>
+                        <p>“We received support at a time when we felt helpless. The kindness and practical help changed our lives for the better.”</p>
+                        <button type="button" class="testimonial-btn" data-name="Rose M." data-role="Parent" data-quote="We received support at a time when we felt helpless. The kindness and practical help changed our lives for the better. Today, our family is stronger, healthier, and more hopeful because of this support.">Read Story</button>
                     </div>
                 </div>
             </div>
@@ -320,11 +368,17 @@
 
     <footer>
         <div class="container">
+            <div class="footer-cta">
+                <div>
+                    <span class="footer-kicker">Support the mission</span>
+                    <h3>Help us bring care, shelter, and education to families in need.</h3>
+                </div>
+                <a href="donate.html" class="btn-fill border-0 text-decoration-none d-inline-block">Donate Today</a>
+            </div>
             <div class="row py-5 gy-5 text-center text-md-start">
                 <div class="col-md-6 col-lg-3">
                     <img src="images/foot-logo.png" alt="">
-                    <p class="py-3 pt-5 text-white opacity-50" style="font-size: 14px; line-height: 1.8;">Lorem ipsum dolor sit amet, con sectetur adipiscing elit. Mauris temp us vestib ulum mauris.Lorem ipsum dolor sit amet,
-                    consectetur adipiscing elit. Mauris tempus vestib ulum mauris.Lorem ipsum dolo.</p>
+                    <p class="py-3 pt-5 text-white opacity-50" style="font-size: 14px; line-height: 1.8;">We are building brighter futures by empowering communities with compassion, practical support, and sustainable hope for lasting change.</p>
                     <i style="padding: 10px 11px; font-size: 15px; background-color: var(--primary); cursor: pointer;"
                         class=" text-white  icon rounded-circle fab fa-facebook-f"></i>
                     <i class=" text-white p-2 icon rounded-circle fab fa-twitter" style="background-color: var(--primary); cursor: pointer;"></i>
@@ -332,49 +386,149 @@
                     <i class=" text-white p-2 icon rounded-circle fab fa-youtube" style="background-color: var(--primary); cursor: pointer;"></i>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <h4  class="pb-4 text-white fs-5">Useful Links</h4>
-                    <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Privacy Polticy</p>
+                    <h4  class="pb-4 text-white fs-5">Helpful Links</h4>
+                    <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Privacy Policy</p>
                     <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Become a Volunteer</p>
                     <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Donate</p>
                     <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Testimonials</p>
-                    <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Portfolio</p>
+                    <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">Projects</p>
                     <p class="text-white opacity-50 text " style="cursor: pointer; transition: .3s; font-size: 14px;">News</p>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <h4  class="pb-4 text-white fs-5">Latest News</h4>
-                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">A new cause to help</p>
-                    <span class="pb-5 d-block"  style="color: var(--primary); font-size: 12px;">March 12, 2018</span>
-                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">We love to help people</p>
-                    <span class="pb-5 d-block" style="color: var(--primary); font-size: 12px;">March 12, 2018</span>
-                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">The new ideas for helping</p>
-                    <span class="pb-5 d-block" style="color: var(--primary); font-size: 12px;">March 12, 2018</span>
+                    <h4  class="pb-4 text-white fs-5">Latest Updates</h4>
+                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">Support a new cause</p>
+                    <span class="pb-5 d-block"  style="color: var(--primary); font-size: 12px;">March 12, 2026</span>
+                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">We are helping families thrive</p>
+                    <span class="pb-5 d-block" style="color: var(--primary); font-size: 12px;">March 12, 2026</span>
+                    <p class="text-white opacity-50 text  mb-0 " style="cursor: pointer; transition: .3s; font-size: 14px;">Fresh ideas for lasting care</p>
+                    <span class="pb-5 d-block" style="color: var(--primary); font-size: 12px;">March 12, 2026</span>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div id="footer-contact" class="col-md-6 col-lg-3">
                     <h4 class="pb-4 text-white fs-5">Contact</h4>
                     <div class="d-flex gap-3 align-items-center align-items-md-start flex-column flex-md-row">
                         <i class="mt-1 fas fa-phone-alt fa-fw " style="color: var(--primary);"></i>
-                        <p class="text-white opacity-50">+45 677 8993000 223</p>
+                        <p class="text-white opacity-50">+254700587281</p>
                     </div>
+                    <!-- Backend receiver: dominic_marege@yahoo.com -->
                     <div class="d-flex gap-3 align-items-center align-items-md-start flex-column flex-md-row">
                         <i class="mt-1 fas fa-envelope fa-fw"  style="color: var(--primary);"></i>
-                        <p class="text-white opacity-50">office@template.com</p>
+                        <p class="text-white opacity-50">homecharity.co.ke</p>
                     </div>
                     <div class="d-flex gap-3 align-items-center align-items-md-start flex-column flex-md-row">
                         <i class="mt-1 fas fa-map-marker-alt fa-fw" style="color: var(--primary);"></i>
-                        <p class="text-white opacity-50">Main Str. no 45-46, b3, 56832, Los Angeles, CA</p>
+                        <p class="text-white opacity-50">Nairobi, Kenya</p>
                     </div>
                     <div class="d-flex pt-3 ">
                         <input type="text" placeholder="Your Email" class="flex-fill  border-0 ps-2 text-secondary-emphasis  " style="font-size: 14px; height: 40px;">
                         <button type="submit" class="border-0 text-white" style="font-size: 14px; background-color: var(--primary);">SEND</button>
                     </div>
+                    <div class="pt-4 mt-3 border-top border-light border-opacity-10">
+                        <p class="text-white opacity-75 mb-1" style="font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;">Updated</p>
+                        <p class="text-white opacity-75 mb-0" style="font-size: 14px;">Today: <span id="currentDate">--</span></p>
+                        <p class="text-white opacity-75 mb-0" style="font-size: 14px;">Year: <span id="currentYear">--</span></p>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="py-3" style="background-color: #0e0d0d;">
-            <h3 class="text-center text-white">Made With <i style="color: red;" class="fas fa-heart"></i> By <span style="color: var(--primary);">Mostafa Usama</span></h3>
+            <h3 class="text-center text-white">Made with <i style="color: red;" class="fas fa-heart"></i> by <span style="color: var(--primary);">Home Charity</span></h3>
         </div>
     </footer>
 
+    <div id="testimonialModal" class="testimonial-modal" aria-hidden="true">
+        <div class="testimonial-modal-content" role="dialog" aria-modal="true" aria-labelledby="testimonialModalName">
+            <button type="button" class="testimonial-modal-close" aria-label="Close testimonial">×</button>
+            <div class="testimonial-modal-head">
+                <div class="testimonial-avatar" id="testimonialModalAvatar">A</div>
+                <div>
+                    <h4 id="testimonialModalName" class="modal-name">Name</h4>
+                    <div id="testimonialModalRole" class="modal-role">Role</div>
+                </div>
+            </div>
+            <blockquote id="testimonialModalText">"Testimonial quote goes here."</blockquote>
+        </div>
+    </div>
+
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const currentDateEl = document.getElementById('currentDate');
+        const currentYearEl = document.getElementById('currentYear');
+
+        function updateCurrentDate() {
+            const now = new Date();
+            currentDateEl.textContent = now.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            currentYearEl.textContent = now.getFullYear();
+        }
+
+        updateCurrentDate();
+        setInterval(updateCurrentDate, 60000);
+
+        const testimonialModal = document.getElementById('testimonialModal');
+        const modalName = document.getElementById('testimonialModalName');
+        const modalRole = document.getElementById('testimonialModalRole');
+        const modalText = document.getElementById('testimonialModalText');
+        const modalAvatar = document.getElementById('testimonialModalAvatar');
+        const modalClose = document.querySelector('.testimonial-modal-close');
+
+        document.querySelectorAll('.testimonial-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const name = this.dataset.name || 'Supporter';
+                const role = this.dataset.role || 'Donor';
+                const quote = this.dataset.quote || 'Thank you for helping families in need.';
+
+                modalName.textContent = name;
+                modalRole.textContent = role;
+                modalText.textContent = '“' + quote + '”';
+                modalAvatar.textContent = name.split(' ').map(function (part) {
+                    return part.charAt(0);
+                }).slice(0, 2).join('').toUpperCase();
+
+                testimonialModal.classList.add('show');
+                testimonialModal.setAttribute('aria-hidden', 'false');
+            });
+        });
+
+        function closeTestimonialModal() {
+            testimonialModal.classList.remove('show');
+            testimonialModal.setAttribute('aria-hidden', 'true');
+        }
+
+        modalClose.addEventListener('click', closeTestimonialModal);
+        testimonialModal.addEventListener('click', function (event) {
+            if (event.target === testimonialModal) {
+                closeTestimonialModal();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && testimonialModal.classList.contains('show')) {
+                closeTestimonialModal();
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+            anchor.addEventListener('click', function (event) {
+                const targetId = this.getAttribute('href');
+                if (!targetId || targetId === '#') return;
+
+                const target = document.querySelector(targetId);
+                if (!target) return;
+
+                event.preventDefault();
+                const offset = 90;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
