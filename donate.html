@@ -3,333 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donate Securely</title>
+    <meta name="description" content="Make a secure donation to support families in need.">
+    <title>Donate Securely | Home Charity</title>
     <link rel="stylesheet" href="css/all.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,500;6..12,700&display=swap" rel="stylesheet">
 </head>
 <body class="payment-page">
-    <div class="container py-5">
+    <main class="container py-5">
         <div class="payment-shell row g-0 align-items-stretch">
-            <form id="donationForm" class="col-lg-7 payment-form">
+            <form id="donationForm" class="col-lg-7 payment-form" novalidate>
                 <div class="form-topbar">
-                    <a href="index.html" class="btn btn-link text-decoration-none px-0" style="color: var(--primary); font-weight: 700;">← Back to Home</a>
-                    <span class="secure-pill"><i class="fas fa-shield-alt"></i> Secure Giving</span>
+                    <a href="index.html" class="btn btn-link text-decoration-none px-0 payment-home-link">← Back to Home</a>
+                    <span class="secure-pill"><i class="fas fa-lock" aria-hidden="true"></i> Secure payment options</span>
                 </div>
                 <div class="donation-kicker">Help families thrive</div>
-                <h2>Support the Cause</h2>
-                <p class="form-subtitle">Your generosity helps provide food, education, shelter, and life-changing support to families in need.</p>
+                <h1>Make a donation</h1>
+                <p class="form-subtitle">Your gift helps provide food, education, shelter, and support to families in need.</p>
 
-                <div class="amount-box">
-                    <span>$</span>
-                    <input type="number" min="1" step="1" value="25" aria-label="Donation amount">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First name</label>
-                        <input id="firstName" type="text" placeholder="Your first name">
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last name</label>
-                        <input id="lastName" type="text" placeholder="Your last name">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email address</label>
-                        <input id="email" type="email" placeholder="you@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="country">Country</label>
-                        <select id="country">
-                            <option>Kenya</option>
-                            <option>United States</option>
-                            <option>United Kingdom</option>
-                            <option>Uganda</option>
-                            <option>India</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Choose a payment method</label>
-                    <div class="payment-methods">
+                <fieldset class="payment-choice-group">
+                    <legend>Choose how to donate</legend>
+                    <div class="payment-methods" id="paymentMethods" aria-live="polite">
                         <label class="payment-option">
-                            <input type="radio" name="payment" checked>
-                            <span class="pay-card">
-                                <span class="pay-logo">📱</span>
-                                <span class="pay-name">M-Pesa</span>
-                                <span class="pay-desc">Direct transfer</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="mpesa" data-currency="KES">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">📱</span><span class="pay-name">M-Pesa</span><span class="pay-desc">KES · mobile money</span><span class="method-state">Checking availability…</span></span>
                         </label>
-
-                        <label class="payment-option" style="display: none;">
-                            <input type="radio" name="payment">
-                            <span class="pay-card">
-                                <span class="pay-logo">📲</span>
-                                <span class="pay-name">Safaricom Push</span>
-                                <span class="pay-desc">STK push</span>
-                            </span>
-                        </label>
-
                         <label class="payment-option">
-                            <input type="radio" name="payment" data-transfer="bank">
-                            <span class="pay-card">
-                                <span class="pay-logo">🏧</span>
-                                <span class="pay-name">M-Pesa to Bank</span>
-                                <span class="pay-desc">ABSA transfer</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="card" data-currency="USD">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">💳</span><span class="pay-name">Visa / Mastercard</span><span class="pay-desc">USD · debit or credit card</span><span class="method-state">Checking availability…</span></span>
                         </label>
-
                         <label class="payment-option">
-                            <input type="radio" name="payment">
-                            <span class="pay-card">
-                                <span class="pay-logo">💳</span>
-                                <span class="pay-name">Visa</span>
-                                <span class="pay-desc">Card</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="paypal" data-currency="USD">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">🅿️</span><span class="pay-name">PayPal</span><span class="pay-desc">USD · PayPal checkout</span><span class="method-state">Checking availability…</span></span>
                         </label>
-
                         <label class="payment-option">
-                            <input type="radio" name="payment">
-                            <span class="pay-card">
-                                <span class="pay-logo">💳</span>
-                                <span class="pay-name">MasterCard</span>
-                                <span class="pay-desc">Card</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="binance" data-currency="USD">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">◈</span><span class="pay-name">Binance Pay</span><span class="pay-desc">USD amount · paid in USDT</span><span class="method-state">Checking availability…</span></span>
                         </label>
-
                         <label class="payment-option">
-                            <input type="radio" name="payment">
-                            <span class="pay-card">
-                                <span class="pay-logo">🅿️</span>
-                                <span class="pay-name">PayPal</span>
-                                <span class="pay-desc">Wallet</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="bitcoin" data-currency="USD">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">₿</span><span class="pay-name">Bitcoin</span><span class="pay-desc">USD amount · paid in BTC</span><span class="method-state">Checking availability…</span></span>
                         </label>
-
                         <label class="payment-option">
-                            <input type="radio" name="payment" data-transfer="bank">
-                            <span class="pay-card">
-                                <span class="pay-logo">🏦</span>
-                                <span class="pay-name">Bank Transfer</span>
-                                <span class="pay-desc">ABSA Kenya</span>
-                            </span>
+                            <input type="radio" name="paymentMethod" value="bank" data-currency="KES">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">🏦</span><span class="pay-name">Bank transfer</span><span class="pay-desc">KES · confirm manually</span><span class="method-state">Available</span></span>
                         </label>
                     </div>
+                </fieldset>
+
+                <fieldset class="amount-group">
+                    <legend>Choose your donation amount</legend>
+                    <div class="amount-presets" aria-label="Suggested donation amounts">
+                        <button type="button" class="amount-preset" data-amount="500">KES 500</button>
+                        <button type="button" class="amount-preset" data-amount="1000">KES 1,000</button>
+                        <button type="button" class="amount-preset" data-amount="2500">KES 2,500</button>
+                    </div>
+                    <label for="donationAmount">Or enter another amount (<span id="amountCurrencyLabel">KES</span>)</label>
+                    <div class="amount-box">
+                        <span id="amountCurrencySymbol" aria-hidden="true">KES</span>
+                        <input id="donationAmount" type="number" min="10" max="10000000" step="1" value="1000" inputmode="numeric" required>
+                    </div>
+                </fieldset>
+
+                <div class="form-group donor-name-group">
+                    <label for="donorName">Full name</label>
+                    <input id="donorName" type="text" autocomplete="name" maxlength="100" placeholder="Your name" required>
                 </div>
 
-                <div id="bankTransferDetails" class="summary-box transfer-details" style="margin-top: 10px; background: rgba(17, 24, 39, 0.03); border-color: rgba(17, 24, 39, 0.08);">
-                    <div class="transfer-header">
-                        <span class="promo-badge">ABSA Kenya</span>
-                        <span class="transfer-tag">Bank transfer</span>
-                    </div>
-                    <div class="transfer-info">
-                        <div>
-                            <small>Account holder</small>
-                            <strong>Charity Donation Fund</strong>
-                        </div>
-                        <div>
-                            <small>Account number</small>
-                            <strong>2051536951</strong>
-                        </div>
-                    </div>
-                    <p class="transfer-note">
-                        Use your donor name or email as the payment reference. Bank SMS alerts can be matched to each successful transfer for confirmation.
-                    </p>
+                <div class="form-group donor-email-group">
+                    <label for="email">Email address</label>
+                    <input id="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
                 </div>
 
-                <div id="mpesaFlow" class="summary-box transfer-details is-visible" style="margin-top: 10px; background: rgba(22, 163, 74, 0.03); border-color: rgba(22, 163, 74, 0.12);">
-                    <div class="transfer-header">
-                        <span class="promo-badge mpesa-badge">M-Pesa</span>
-                        <span class="transfer-tag">Secure push</span>
-                    </div>
-                    <div class="transfer-info" style="margin-bottom: 16px;">
-                        <div>
-                            <small>Account</small>
-                            <strong>+254700587281</strong>
-                        </div>
-                        <div>
-                            <small>Method</small>
-                            <strong>STK push</strong>
-                        </div>
-                    </div>
-                    <div class="mpesa-step">
-                        <div class="mpesa-step-title">Step 1: Enter phone number</div>
-                        <div class="form-row" style="margin-bottom: 0;">
-                            <div class="form-group">
-                                <label for="phoneNumber">Phone number</label>
-                                <input id="phoneNumber" type="tel" placeholder="2547XXXXXXXX">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mpesa-step">
-                        <div class="mpesa-step-title">Step 2: Confirm with M-Pesa PIN</div>
-                        <div class="form-row" style="margin-bottom: 0;">
-                            <div class="form-group">
-                                <label for="mpesaPin">M-Pesa PIN</label>
-                                <input id="mpesaPin" type="password" placeholder="Enter your M-Pesa PIN to confirm">
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="confirm-mpesa-btn">Confirm payment</button>
-                    <p class="transfer-note" style="margin-top: 12px;">
-                        Enter the donor phone number and complete the M-Pesa PIN prompt to approve the secure donation transfer.
-                    </p>
+                <div id="phoneGroup" class="form-group donor-phone-group" hidden>
+                    <label for="phoneNumber">M-Pesa phone number</label>
+                    <input id="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="+254 7XX XXX XXX" maxlength="20">
+                    <small>Use the number registered with M-Pesa. Approve the request in the official M-Pesa prompt; never enter your PIN here.</small>
                 </div>
 
-                <div id="cardFields" class="form-row">
-                    <div class="form-group">
-                        <label for="reference">Donation reference</label>
-                        <input id="reference" type="text" placeholder="Your name or email reference">
-                    </div>
-                    <div class="form-group">
-                        <label for="cardName">Cardholder name</label>
-                        <input id="cardName" type="text" placeholder="Name on card">
+                <div id="checkoutInfo" class="checkout-info" aria-label="Payment information">
+                    <div class="checkout-info-icon" aria-hidden="true"><i class="fas fa-lock"></i></div>
+                    <div>
+                        <strong id="checkoutInfoTitle">Your payment is securely processed</strong>
+                        <p id="checkoutInfoText">Choose a payment method above. Card, PayPal, Binance Pay, and Bitcoin payments open the provider’s hosted checkout. This page never collects card details or payment PINs.</p>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="cardNumber">Card number</label>
-                        <input id="cardNumber" type="text" placeholder="1234 5678 9012 3456">
-                    </div>
-                    <div class="form-group">
-                        <label for="notify">SMS confirmation</label>
-                        <input id="notify" type="text" placeholder="+254 ...">
-                    </div>
-                </div>
+                <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+                <button type="submit" id="submitPaymentBtn" class="submit-btn" disabled>
+                    <span class="submit-label">Continue to secure checkout</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+                <p class="payment-footnote">Only provider-verified online transactions are confirmed as paid. Bank transfers require manual confirmation.</p>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="expiry">Expiry date</label>
-                        <input id="expiry" type="text" placeholder="MM / YY">
-                    </div>
-                    <div class="form-group">
-                        <label for="cvv">CVV</label>
-                        <input id="cvv" type="password" placeholder="***">
-                    </div>
-                </div>
-
-                <div class="summary-box" style="margin-top: 10px; background: rgba(255, 72, 0, 0.04); border-color: rgba(255, 72, 0, 0.12);">
-                    <p style="margin: 0; color: #374151; font-size: 0.92rem; line-height: 1.6;">
-                        For live transactions, serve this page over HTTPS and connect to a PCI-compliant gateway or bank API. Never store card numbers in the browser or website code. For real bank transfer payments, confirm the deposit with the charity team using the donor reference.
-                    </p>
-                </div>
-
-                <button type="submit" class="submit-btn">Proceed to Secure Payment</button>
+                <section id="transferInstructions" class="transfer-instructions" aria-labelledby="transferInstructionsTitle" aria-live="polite" hidden>
+                    <h2 id="transferInstructionsTitle">Transfer to ABSA Bank Kenya</h2>
+                    <p>Open your bank app or visit your bank and transfer the exact amount below. Put the donation reference in the transfer reference/narration field.</p>
+                    <dl class="bank-account-details">
+                        <div><dt>Bank</dt><dd>ABSA Bank Kenya</dd></div>
+                        <div><dt>Account holder</dt><dd>Charity Donation Fund</dd></div>
+                        <div><dt>Account number</dt><dd>2051536951</dd></div>
+                        <div><dt>Donation amount</dt><dd id="transferAmount"></dd></div>
+                        <div><dt>Payment reference</dt><dd id="transferReference" class="donation-reference"></dd></div>
+                    </dl>
+                    <p class="transfer-reminder"><strong>Important:</strong> The website cannot see your bank account or confirm that the transfer arrived. The charity team will verify the deposit manually.</p>
+                </section>
             </form>
 
-            <aside class="col-lg-5 payment-summary">
-                <h2>Donation Summary</h2>
+            <aside class="col-lg-5 payment-summary" aria-labelledby="donationSummaryTitle">
+                <h2 id="donationSummaryTitle">Your donation</h2>
                 <div class="summary-box">
-                    <p class="text-white-50 mb-3">You are helping fund:</p>
-                    <h4 class="fw-bold">Clean Water for Children</h4>
+                    <p class="text-white-50 mb-3">Your gift supports:</p>
+                    <h3 class="summary-cause">Clean Water for Children</h3>
                     <ul class="summary-list">
-                        <li><span>Donation</span><strong>$25.00</strong></li>
-                        <li><span>Processing</span><strong>$0.00</strong></li>
-                        <li><span>Tax Deductible</span><strong>Yes</strong></li>
+                        <li><span id="summaryMethod">M-Pesa donation</span><strong id="donationAmountSummary">KES 1,000</strong></li>
+                        <li><span>Payment fees</span><strong id="paymentFeeSummary">Shown by provider</strong></li>
                     </ul>
                 </div>
-
-                <div class="summary-box">
-                    <p class="text-white-50 mb-3">Secure payment supported by:</p>
-                    <ul class="summary-list">
-                        <li><span>M-Pesa</span><strong>Enabled</strong></li>
-                        <li><span>Visa / Mastercard</span><strong>Enabled</strong></li>
-                        <li><span>PayPal</span><strong>Enabled</strong></li>
-                        <li><span>Bank Transfer</span><strong>Available</strong></li>
-                    </ul>
+                <div class="summary-box payment-promise">
+                    <h3>Payment safety</h3>
+                    <p id="paymentPromiseText">Online payment methods open a secure provider checkout. The server verifies payment directly with the provider before recording a donation as paid.</p>
                 </div>
             </aside>
         </div>
-    </div>
+    </main>
 
-    <div id="successModal" class="thankyou-modal" aria-hidden="true">
-        <div class="thankyou-content">
-            <div class="success-icon">✓</div>
-            <h3>Thank You for Your Donation!</h3>
-            <p>Your transfer to ABSA Bank Kenya has been received successfully.</p>
-            <p class="mb-0">A confirmation will be shared with your email address.</p>
-            <button type="button" class="success-close" id="closeSuccessModal">Back to Home</button>
-        </div>
-    </div>
-
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        const donationForm = document.getElementById('donationForm');
-        const successModal = document.getElementById('successModal');
-        const closeSuccessModal = document.getElementById('closeSuccessModal');
-        const submitPaymentBtn = document.getElementById('submitPaymentBtn');
-
-        function hideSuccessModal() {
-            successModal.classList.remove('show');
-            successModal.setAttribute('aria-hidden', 'true');
-            window.location.href = 'index.html';
-        }
-
-        const bankTransferDetails = document.getElementById('bankTransferDetails');
-        const mpesaFlow = document.getElementById('mpesaFlow');
-        const cardFields = document.getElementById('cardFields');
-        const paymentRadios = document.querySelectorAll('input[name="payment"]');
-
-        function setPanelVisible(panel, show) {
-            if (!panel) return;
-            panel.classList.toggle('is-visible', show);
-            panel.style.display = 'block';
-            panel.style.opacity = show ? '1' : '0';
-            panel.style.maxHeight = show ? '700px' : '0';
-            panel.style.paddingTop = show ? '22px' : '0';
-            panel.style.paddingBottom = show ? '22px' : '0';
-            panel.style.borderWidth = show ? '1px' : '0';
-            panel.style.marginTop = show ? '10px' : '0';
-            panel.style.pointerEvents = show ? 'auto' : 'none';
-        }
-
-        function toggleTransferDetails() {
-            const selected = document.querySelector('input[name="payment"]:checked');
-            const selectedName = selected && selected.closest('.payment-option') && selected.closest('.payment-option').querySelector('.pay-name')?.textContent || '';
-            const showBank = selected && selected.dataset.transfer === 'bank';
-            const showMpesa = selectedName.includes('M-Pesa') || selectedName.includes('Safaricom');
-            const showCards = !showBank && !showMpesa;
-
-            setPanelVisible(bankTransferDetails, showBank);
-            setPanelVisible(mpesaFlow, showMpesa);
-            cardFields.style.display = showCards ? 'grid' : 'none';
-            cardFields.style.opacity = showCards ? '1' : '0';
-        }
-
-        paymentRadios.forEach(function (radio) {
-            radio.addEventListener('change', toggleTransferDetails);
-        });
-
-        donationForm?.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            if (submitPaymentBtn) {
-                submitPaymentBtn.disabled = true;
-                submitPaymentBtn.classList.add('is-processing');
-                submitPaymentBtn.textContent = 'Processing...';
-            }
-
-            setTimeout(function () {
-                successModal.classList.add('show');
-                successModal.setAttribute('aria-hidden', 'false');
-                if (submitPaymentBtn) {
-                    submitPaymentBtn.disabled = false;
-                    submitPaymentBtn.classList.remove('is-processing');
-                    submitPaymentBtn.textContent = 'Proceed to Secure Payment';
-                }
-                setTimeout(hideSuccessModal, 2000);
-            }, 500);
-        });
-
-        closeSuccessModal?.addEventListener('click', hideSuccessModal);
-        toggleTransferDetails();
-    </script>
+    <script src="js/donation.js" defer></script>
 </body>
 </html>

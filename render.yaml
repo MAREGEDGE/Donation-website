@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: homecharityke-payment-api
+    runtime: node
+    plan: starter
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/payment-methods
+    disk:
+      name: donation-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/donations.sqlite
+      - key: PUBLIC_BASE_URL
+        value: https://homecharityke.netlify.app
+      - key: PAYPAL_ENV
+        value: live
+      - key: NOWPAYMENTS_ENV
+        value: production
+      - key: FLW_SECRET_KEY
+        sync: false
+      - key: FLW_SECRET_HASH
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: BINANCE_PAY_API_SECRET
+        sync: false
+      - key: BINANCE_PAY_CERTIFICATE_SN
+        sync: false
+      - key: NOWPAYMENTS_API_KEY
+        sync: false
+      - key: NOWPAYMENTS_IPN_SECRET
+        sync: false
