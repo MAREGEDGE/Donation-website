@@ -142,6 +142,9 @@
                 headers: { Accept: 'application/json' },
                 credentials: 'same-origin'
             });
+            if (!response.headers.get('content-type')?.includes('application/json')) {
+                throw new Error('Online payment options are unavailable. You can still donate by bank transfer.');
+            }
             const result = await response.json();
             if (!response.ok || !Array.isArray(result.methods)) {
                 throw new Error(result.error || 'Payment methods could not be loaded.');
@@ -186,7 +189,10 @@
                 updateAmountControls(fallback);
                 setMethodDetails(fallback);
             }
-            showMessage(error.message || 'Payment methods could not be loaded. Please refresh the page.', 'error');
+            showMessage(
+                error.message || 'Online payment options are unavailable. You can still donate by bank transfer.',
+                'pending'
+            );
         }
     }
 
