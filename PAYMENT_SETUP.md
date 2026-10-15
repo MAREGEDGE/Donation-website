@@ -7,7 +7,7 @@ The payment page offers these distinct routes:
 - **PayPal:** USD checkout through PayPal Orders.
 - **Binance Pay:** USD donation value charged as USDT through Binance Pay.
 - **Bitcoin:** USD invoice paid in BTC through NOWPayments.
-- **ABSA bank transfer:** KES transfer, confirmed manually by the charity team.
+- **ABSA bank transfer:** KES direct deposit to the charity's account, confirmed manually by the charity team.
 
 Safaricom processes M-Pesa and Pesapal processes Visa/Mastercard; PayPal,
 Binance Pay, and NOWPayments are separate merchant integrations. These services settle funds
@@ -25,8 +25,11 @@ JavaScript.
 
 ## Configure providers
 
-1. For local bank-transfer testing, no provider credentials or `.env` file are
-   required. Start the site with `npm.cmd start` and open
+1. Direct ABSA bank-transfer instructions work on the static donation page and
+   do not require provider credentials or the payment API. The transfer
+   reference is generated in the donor's browser and is not stored by the
+   website, so the charity must match the bank statement manually. For the
+   other online methods, start the API with `npm.cmd start` and open
    `http://localhost:3000/donate.html`.
 2. For the hosted Netlify site, deploy the Node API using the included
    `render.yaml` Blueprint. Render needs a paid web-service plan for the
@@ -109,8 +112,9 @@ server. NOWPayments payment notifications are validated with the configured
 IPN HMAC secret and checked against the recorded order and USD amount. Only a
 verified provider result changes an online donation to `paid`.
 
-Bank-transfer instructions are not a payment confirmation. Reconcile the
-ABSA statement independently and only mark a donation received after the bank
+Bank-transfer instructions are not a payment confirmation. Their reference is
+generated in the donor's browser and is not recorded by the site. Reconcile
+the ABSA statement independently and only confirm a donation after the bank
 deposit appears.
 
 ## Production checks

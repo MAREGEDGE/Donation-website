@@ -92,6 +92,12 @@
     function setMethodDetails(method) {
         const isBank = method.id === 'bank';
         const isMpesa = method.id === 'mpesa';
+        const donorNameInput = document.getElementById('donorName');
+        const donorEmailInput = document.getElementById('email');
+        document.querySelector('.donor-name-group').hidden = isBank;
+        document.querySelector('.donor-email-group').hidden = isBank;
+        donorNameInput.required = !isBank;
+        donorEmailInput.required = !isBank;
         phoneGroup.hidden = !isMpesa;
         phoneInput.required = isMpesa;
         transferInstructions.hidden = true;
@@ -186,6 +192,12 @@
 
     function delay(milliseconds) {
         return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+    }
+
+    function createBankTransferReference() {
+        const bytes = new Uint8Array(6);
+        window.crypto.getRandomValues(bytes);
+        return `BANK-${Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
     }
 
     async function fetchPaymentStatus(reference) {
@@ -332,6 +344,16 @@
             return;
         }
 
+        if (method.id === 'bank') {
+            const reference = createBankTransferReference();
+            document.getElementById('transferAmount').textContent = formatAmount(amount, 'KES');
+            document.getElementById('transferReference').textContent = reference;
+            transferInstructions.hidden = false;
+            showMessage('Bank details are ready. Include the reference in your transfer narration; the charity team will confirm your donation after checking the deposit.', 'pending');
+            transferInstructions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+
         const body = {
             method: method.id,
             amount,
@@ -340,9 +362,9 @@
         };
         if (method.id === 'mpesa') body.phone = phoneInput.value.trim();
 
-        setBusy(true, method.id === 'bank' ? 'Preparing transfer instructions…' : 'Connecting to secure checkout…');
+        setBusy(true, 'Connecting to secure checkout…');
         try {
-            const response = await fetch(method.id === 'bank' ? '/api/bank-transfers' : '/api/payments', {
+            const response = await fetch('/api/payments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -353,15 +375,6 @@
             });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || 'The payment request could not be completed.');
-
-            if (method.id === 'bank') {
-                document.getElementById('transferAmount').textContent = formatAmount(result.amount, 'KES');
-                document.getElementById('transferReference').textContent = result.reference;
-                transferInstructions.hidden = false;
-                showMessage('Transfer instructions are ready. Your donation is not confirmed until the deposit is received and checked.', 'pending');
-                transferInstructions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                return;
-            }
 
             if (method.id === 'mpesa') {
                 showMessage('M-Pesa request sent. Check your phone and approve the Safaricom prompt to complete your donation.', 'pending');
