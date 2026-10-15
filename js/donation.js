@@ -106,8 +106,10 @@
         } else {
             document.getElementById('checkoutInfoTitle').textContent = 'Your payment is securely processed';
             document.getElementById('checkoutInfoText').textContent = isMpesa
-                ? 'Continue to Flutterwave to request an M-Pesa payment. Approve the prompt on your phone; never enter your M-Pesa PIN on this website.'
-                : 'Continue to the selected provider’s hosted checkout. Card, PayPal, Binance Pay, and Bitcoin payments are processed away from this website.';
+                ? 'Safaricom will send an M-Pesa prompt to your phone. Approve it in the official M-Pesa prompt; never enter your PIN on this website.'
+                : method.id === 'card'
+                    ? 'Continue to Pesapal’s hosted Visa or Mastercard checkout. Your card details are entered only on Pesapal.'
+                    : 'Continue to the selected provider’s hosted checkout. PayPal, Binance Pay, and Bitcoin payments are processed away from this website.';
             document.getElementById('paymentPromiseText').textContent = 'We confirm online donations only after the payment provider verifies the transaction.';
             document.getElementById('summaryMethod').textContent = `${method.name} donation`;
             document.getElementById('paymentFeeSummary').textContent = 'Shown by provider';
@@ -196,17 +198,6 @@
         return result.status;
     }
 
-    async function fetchFlutterwaveStatus(reference, transactionId) {
-        const query = new URLSearchParams({ reference, transaction_id: transactionId });
-        const response = await fetch(`/api/payments/flutterwave/verify?${query}`, {
-            headers: { Accept: 'application/json' },
-            credentials: 'same-origin'
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Payment status could not be checked.');
-        return result.status;
-    }
-
     async function capturePaypal(reference, orderId) {
         const response = await fetch('/api/payments/paypal/capture', {
             method: 'POST',
@@ -235,19 +226,6 @@
                 const status = await capturePaypal(reference, orderId);
                 if (status === 'paid') {
                     showPaymentSuccess();
-                    return;
-                }
-            } else if (['mpesa', 'card'].includes(gateway)) {
-                const transactionId = params.get('transaction_id');
-                if (!transactionId) throw new Error('The payment provider did not return a transaction ID.');
-                const status = await fetchFlutterwaveStatus(reference, transactionId);
-                if (status === 'paid') {
-                    showPaymentSuccess();
-                    return;
-                }
-                if (status === 'failed') {
-                    showMessage('The payment was not completed. No donation has been confirmed.', 'error');
-                    window.history.replaceState({}, document.title, window.location.pathname);
                     return;
                 }
             } else {
@@ -385,10 +363,15 @@
                 return;
             }
 
+            if (method.id === 'mpesa') {
+                showMessage('M-Pesa request sent. Check your phone and approve the Safaricom prompt to complete your donation.', 'pending');
+                await verifyReturnedPayment(result.reference, 'mpesa', new URLSearchParams());
+                return;
+            }
+
             const checkoutUrl = new URL(result.checkoutUrl);
             const trustedHosts = {
-                mpesa: ['flutterwave.com'],
-                card: ['flutterwave.com'],
+                card: ['pesapal.com'],
                 paypal: ['paypal.com'],
                 binance: ['binance.com'],
                 bitcoin: ['nowpayments.io']

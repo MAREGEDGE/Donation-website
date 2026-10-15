@@ -21,9 +21,25 @@ services:
         value: live
       - key: NOWPAYMENTS_ENV
         value: production
-      - key: FLW_SECRET_KEY
+      - key: MPESA_ENV
+        value: sandbox
+      - key: MPESA_CONSUMER_KEY
         sync: false
-      - key: FLW_SECRET_HASH
+      - key: MPESA_CONSUMER_SECRET
+        sync: false
+      - key: MPESA_SHORTCODE
+        sync: false
+      - key: MPESA_PASSKEY
+        sync: false
+      - key: MPESA_TRANSACTION_TYPE
+        value: CustomerPayBillOnline
+      - key: PESAPAL_ENV
+        value: sandbox
+      - key: PESAPAL_CONSUMER_KEY
+        sync: false
+      - key: PESAPAL_CONSUMER_SECRET
+        sync: false
+      - key: PESAPAL_IPN_ID
         sync: false
       - key: PAYPAL_CLIENT_ID
         sync: false

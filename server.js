@@ -7,7 +7,8 @@ const rateLimit = require('express-rate-limit');
 const Database = require('better-sqlite3');
 require('dotenv').config();
 
-const FLUTTERWAVE_API = 'https://api.flutterwave.com/v3';
+const MPESA_PRODUCTION_API = 'https://api.safaricom.co.ke';
+const PESAPAL_PRODUCTION_API = 'https://pay.pesapal.com/v3';
 const PAYPAL_PRODUCTION_API = 'https://api-m.paypal.com';
 const BINANCE_PAY_API = 'https://bpay.binanceapi.com';
 const NOWPAYMENTS_PRODUCTION_API = 'https://api.nowpayments.io/v1';
@@ -44,7 +45,7 @@ function parseDonation(body) {
         phone = rawPhone.replace(/[\s()-]/g, '');
         if (phone.startsWith('+')) phone = phone.slice(1);
         if (phone.startsWith('0')) phone = `254${phone.slice(1)}`;
-        if (!/^2547\d{8}$/.test(phone)) {
+        if (!/^254[17]\d{8}$/.test(phone)) {
             return { error: 'Enter a valid Kenyan M-Pesa mobile number.' };
         }
     }
@@ -171,7 +172,7 @@ function createApp(options = {}) {
         limit: 30,
         standardHeaders: 'draft-7',
         legacyHeaders: false,
-        skip: (request) => request.path.endsWith('/webhook')
+        skip: (request) => ['/webhook', '/callback', '/ipn'].some((suffix) => request.path.endsWith(suffix))
     }));
     app.use(express.json({
         limit: '16kb',
@@ -201,10 +202,18 @@ function createApp(options = {}) {
     }
 
     function availableMethods() {
-        const flutterwave = hasCredentials(config.FLW_SECRET_KEY, config.FLW_SECRET_HASH);
         return {
-            mpesa: flutterwave,
-            card: flutterwave,
+            mpesa: hasCredentials(
+                config.MPESA_CONSUMER_KEY,
+                config.MPESA_CONSUMER_SECRET,
+                config.MPESA_SHORTCODE,
+                config.MPESA_PASSKEY
+            ),
+            card: hasCredentials(
+                config.PESAPAL_CONSUMER_KEY,
+                config.PESAPAL_CONSUMER_SECRET,
+                config.PESAPAL_IPN_ID
+            ),
             paypal: hasCredentials(config.PAYPAL_CLIENT_ID, config.PAYPAL_CLIENT_SECRET),
             binance: hasCredentials(config.BINANCE_PAY_API_SECRET, config.BINANCE_PAY_CERTIFICATE_SN),
             bitcoin: hasCredentials(config.NOWPAYMENTS_API_KEY, config.NOWPAYMENTS_IPN_SECRET),
@@ -212,13 +221,39 @@ function createApp(options = {}) {
         };
     }
 
+    function requestOriginFromRequest(request) {
+        const explicitOrigin = request.get('origin');
+        if (explicitOrigin) {
+            try {
+                return new URL(explicitOrigin).origin;
+            } catch {
+                return '';
+            }
+        }
+
+        const forwardedProto = (request.get('x-forwarded-proto') || request.protocol || 'http')
+            .split(',')[0]
+            .trim();
+        const forwardedHost = (request.get('x-forwarded-host') || request.get('host') || '')
+            .split(',')[0]
+            .trim();
+
+        if (!forwardedHost) return '';
+        const protocol = forwardedProto === 'https' || forwardedProto === 'http' ? forwardedProto : 'http';
+        return `${protocol}://${forwardedHost}`;
+    }
+
     function sameOrigin(request) {
+        const originValue = requestOriginFromRequest(request);
+        if (!originValue) return false;
+
         let origin;
         try {
-            origin = new URL(request.get('origin'));
+            origin = new URL(originValue);
         } catch {
             return false;
         }
+
         const localHttp = origin.protocol === 'http:'
             && ['localhost', '127.0.0.1'].includes(origin.hostname);
         if (origin.protocol !== 'https:' && !localHttp) return false;
@@ -227,7 +262,7 @@ function createApp(options = {}) {
     }
 
     function requestPublicOrigin(request) {
-        return publicOrigin || new URL(request.get('origin')).origin;
+        return publicOrigin || requestOriginFromRequest(request);
     }
 
     function hasCredentials(...values) {
@@ -262,6 +297,110 @@ function createApp(options = {}) {
         });
         if (!payload.access_token) throw new Error('PayPal did not return an access token.');
         return { base, accessToken: payload.access_token };
+    }
+
+    let mpesaToken = '';
+    let mpesaTokenExpiresAt = 0;
+    async function mpesaAccessToken() {
+        if (mpesaToken && mpesaTokenExpiresAt > Date.now()) return mpesaToken;
+        const base = config.MPESA_ENV === 'live' ? MPESA_PRODUCTION_API : 'https://sandbox.safaricom.co.ke';
+        const credentials = Buffer.from(`${config.MPESA_CONSUMER_KEY}:${config.MPESA_CONSUMER_SECRET}`).toString('base64');
+        const payload = await providerJson(`${base}/oauth/v1/generate?grant_type=client_credentials`, {
+            headers: { Authorization: `Basic ${credentials}` }
+        });
+        if (!payload.access_token) throw new Error('Safaricom did not return an access token.');
+        mpesaToken = payload.access_token;
+        mpesaTokenExpiresAt = Date.now() + Math.max(30, Number(payload.expires_in) || 3600) * 1000 - 30000;
+        return mpesaToken;
+    }
+
+    async function requestMpesaStatus(checkoutRequestId) {
+        const base = config.MPESA_ENV === 'live' ? MPESA_PRODUCTION_API : 'https://sandbox.safaricom.co.ke';
+        const token = await mpesaAccessToken();
+        const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '').slice(0, 14);
+        const password = Buffer.from(`${config.MPESA_SHORTCODE}${config.MPESA_PASSKEY}${timestamp}`).toString('base64');
+        const result = await providerJson(`${base}/mpesa/stkpushquery/v1/query`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                BusinessShortCode: config.MPESA_SHORTCODE,
+                Password: password,
+                Timestamp: timestamp,
+                CheckoutRequestID: checkoutRequestId
+            })
+        });
+        if (result.CheckoutRequestID !== checkoutRequestId) {
+            throw new Error('Safaricom returned a mismatched checkout reference.');
+        }
+        return result;
+    }
+
+    const pesapalBase = config.PESAPAL_ENV === 'live' ? PESAPAL_PRODUCTION_API : 'https://cybqa.pesapal.com/pesapalv3';
+    let pesapalToken = '';
+    let pesapalTokenExpiresAt = 0;
+    async function pesapalAccessToken() {
+        if (pesapalToken && pesapalTokenExpiresAt > Date.now()) return pesapalToken;
+        const payload = await providerJson(`${pesapalBase}/api/Auth/RequestToken`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                consumer_key: config.PESAPAL_CONSUMER_KEY,
+                consumer_secret: config.PESAPAL_CONSUMER_SECRET
+            })
+        });
+        if (!payload.token) throw new Error('Pesapal did not return an access token.');
+        pesapalToken = payload.token;
+        const expiresAt = Date.parse(payload.expiryDate);
+        pesapalTokenExpiresAt = Number.isFinite(expiresAt) ? expiresAt - 30000 : Date.now() + 4 * 60 * 1000;
+        return pesapalToken;
+    }
+
+    async function queryPesapalOrder(orderTrackingId) {
+        const token = await pesapalAccessToken();
+        return providerJson(`${pesapalBase}/api/Transactions/GetTransactionStatus?orderTrackingId=${encodeURIComponent(orderTrackingId)}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        });
+    }
+
+    async function updatePesapalDonation(donation) {
+        if (!donation.provider_order_id) return 'pending';
+        const result = await queryPesapalOrder(donation.provider_order_id);
+        const expectedAmount = donation.currency === 'KES' ? donation.amount_minor : donation.amount_minor / 100;
+        const matches = result.merchant_reference === donation.reference
+            && result.currency === donation.currency
+            && Number(result.amount) === expectedAmount;
+        const status = String(result.payment_status_description || '').toLowerCase();
+        if (matches && Number(result.status_code) === 1 && status === 'completed') {
+            markPaid.run(result.confirmation_code || donation.provider_order_id, donation.reference);
+            return 'paid';
+        }
+        if (['0', '2', '3'].includes(String(result.status_code))
+            || ['failed', 'reversed', 'invalid'].includes(status)) {
+            markFailed.run(donation.reference);
+            return 'failed';
+        }
+        return 'pending';
+    }
+
+    async function updateMpesaDonation(donation) {
+        if (!donation.provider_order_id) return 'pending';
+        const result = await requestMpesaStatus(donation.provider_order_id);
+        if (result.ResultCode === undefined || result.ResultCode === null) return 'pending';
+        if (String(result.ResponseCode) !== '0') return 'pending';
+        const resultCode = Number(result.ResultCode);
+        if (!Number.isFinite(resultCode)) return 'pending';
+        if (resultCode === 0) {
+            markPaid.run(donation.provider_order_id, donation.reference);
+            return 'paid';
+        }
+        markFailed.run(donation.reference);
+        return 'failed';
     }
 
     async function binanceRequest(payload) {
@@ -311,6 +450,7 @@ function createApp(options = {}) {
     }
 
     const getOnlineDonation = db.prepare('SELECT * FROM online_donations WHERE reference = ?');
+    const getDonationByProviderOrder = db.prepare('SELECT * FROM online_donations WHERE provider = ? AND provider_order_id = ?');
     const markPaid = db.prepare(`
         UPDATE online_donations SET status = 'paid', provider_order_id = COALESCE(?, provider_order_id)
         WHERE reference = ? AND status != 'paid'
@@ -325,36 +465,71 @@ function createApp(options = {}) {
         const returnUrl = `${callbackBase}?payment=return&gateway=${donation.method}&reference=${encodeURIComponent(reference)}`;
         const cancelUrl = `${callbackBase}?payment=cancelled&gateway=${donation.method}&reference=${encodeURIComponent(reference)}`;
 
-        if (donation.method === 'mpesa' || donation.method === 'card') {
-            const paymentOptions = donation.method === 'mpesa' ? 'mpesa' : 'card';
-            const result = await providerJson(`${FLUTTERWAVE_API}/payments`, {
+        if (donation.method === 'mpesa') {
+            const token = await mpesaAccessToken();
+            const base = config.MPESA_ENV === 'live' ? MPESA_PRODUCTION_API : 'https://sandbox.safaricom.co.ke';
+            const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '').slice(0, 14);
+            const password = Buffer.from(`${config.MPESA_SHORTCODE}${config.MPESA_PASSKEY}${timestamp}`).toString('base64');
+            const result = await providerJson(`${base}/mpesa/stkpush/v1/processrequest`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${config.FLW_SECRET_KEY}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    tx_ref: reference,
-                    amount: donation.amount,
-                    currency: donation.currency,
-                    payment_options: paymentOptions,
-                    redirect_url: returnUrl,
-                    customer: {
-                        email: donation.email,
-                        name: donation.name,
-                        ...(donation.phone ? { phonenumber: donation.phone } : {})
-                    },
-                    customizations: {
-                        title: 'Home Charity Donation',
-                        description: 'One-time donation to support families in need'
-                    },
-                    configuration: { session_duration: 30, max_retry_attempt: 3 }
+                    BusinessShortCode: config.MPESA_SHORTCODE,
+                    Password: password,
+                    Timestamp: timestamp,
+                    TransactionType: config.MPESA_TRANSACTION_TYPE || 'CustomerPayBillOnline',
+                    Amount: donation.amountMinor,
+                    PartyA: donation.phone,
+                    PartyB: config.MPESA_SHORTCODE,
+                    PhoneNumber: donation.phone,
+                    CallBackURL: `${requestPublicOrigin(request)}/api/payments/mpesa/callback`,
+                    AccountReference: reference.slice(-12),
+                    TransactionDesc: 'Home Charity donation'
                 })
             });
-            if (result.status !== 'success') throw new Error('Flutterwave could not create checkout.');
+            if (String(result.ResponseCode) !== '0' || !result.CheckoutRequestID) {
+                throw new Error('Safaricom could not start the M-Pesa payment request.');
+            }
+            return { url: null, orderId: result.CheckoutRequestID, pending: true };
+        }
+
+        if (donation.method === 'card') {
+            const token = await pesapalAccessToken();
+            const names = donation.name.split(/\s+/);
+            const firstName = names.shift() || donation.name;
+            const lastName = names.join(' ') || firstName;
+            const result = await providerJson(`${pesapalBase}/api/Transactions/SubmitOrderRequest`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                },
+                body: JSON.stringify({
+                    id: reference,
+                    currency: donation.currency,
+                    amount: donation.amount,
+                    description: 'Home Charity donation',
+                    callback_url: returnUrl,
+                    notification_id: config.PESAPAL_IPN_ID,
+                    billing_address: {
+                        email_address: donation.email,
+                        phone_number: '',
+                        country_code: 'KE',
+                        first_name: firstName,
+                        last_name: lastName
+                    }
+                })
+            });
+            if (!result.order_tracking_id || result.merchant_reference !== reference || !result.redirect_url) {
+                throw new Error('Pesapal did not return a valid card checkout order.');
+            }
             return {
-                url: trustedCheckoutUrl(result.data.link, ['checkout.flutterwave.com']),
-                orderId: null
+                url: trustedCheckoutUrl(result.redirect_url, ['pesapal.com']),
+                orderId: result.order_tracking_id
             };
         }
 
@@ -538,48 +713,6 @@ function createApp(options = {}) {
         }
     });
 
-    app.get('/api/payments/flutterwave/verify', async (request, response) => {
-        if (request.get('origin') && !sameOrigin(request)) return response.status(403).json({ error: 'Reload the donation page and try again.' });
-        if (!availableMethods().mpesa) return response.status(503).json({ error: 'Flutterwave is not configured.' });
-        const reference = request.query.reference;
-        const transactionId = request.query.transaction_id;
-        if (typeof reference !== 'string' || !/^D-[A-F0-9]{24}$/.test(reference)
-            || typeof transactionId !== 'string' || !/^\d{1,20}$/.test(transactionId)) {
-            return response.status(400).json({ error: 'The payment return details are invalid.' });
-        }
-        const donation = getOnlineDonation.get(reference);
-        if (!donation || !['mpesa', 'card'].includes(donation.provider)) {
-            return response.status(404).json({ error: 'We could not find this donation.' });
-        }
-        if (donation.status === 'paid') return response.json({ status: 'paid' });
-        if (donation.status !== 'pending') return response.json({ status: 'failed' });
-
-        try {
-            const result = await providerJson(`${FLUTTERWAVE_API}/transactions/${encodeURIComponent(transactionId)}/verify`, {
-                headers: { Authorization: `Bearer ${config.FLW_SECRET_KEY}` }
-            });
-            const data = result.data;
-            const expectedCurrency = donation.currency;
-            const expectedAmount = expectedCurrency === 'KES' ? donation.amount_minor : donation.amount_minor / 100;
-            const matches = String(data.id) === transactionId
-                && data.tx_ref === reference
-                && data.currency === expectedCurrency
-                && Number(data.amount) >= expectedAmount;
-            if (data.status === 'successful' && matches) {
-                markPaid.run(transactionId, reference);
-                return response.json({ status: 'paid' });
-            }
-            if (data.status && !['pending', 'processing'].includes(data.status)) {
-                markFailed.run(reference);
-                return response.json({ status: 'failed' });
-            }
-            return response.json({ status: matches ? 'pending' : 'failed' });
-        } catch (error) {
-            console.error('Unable to verify Flutterwave donation:', error.message);
-            return response.status(502).json({ error: 'We could not verify the payment right now. Please retry.' });
-        }
-    });
-
     app.get('/api/payments/status', async (request, response) => {
         if (request.get('origin') && !sameOrigin(request)) return response.status(403).json({ error: 'Reload the donation page and try again.' });
         const reference = request.query.reference;
@@ -590,6 +723,23 @@ function createApp(options = {}) {
         if (!donation) return response.status(404).json({ error: 'We could not find this donation.' });
         if (donation.status === 'paid' || donation.status === 'failed') {
             return response.json({ status: donation.status });
+        }
+
+        if (donation.provider === 'mpesa' && availableMethods().mpesa) {
+            try {
+                return response.json({ status: await updateMpesaDonation(donation) });
+            } catch (error) {
+                console.error('Unable to verify Safaricom M-Pesa donation:', error.message);
+                return response.status(502).json({ error: 'We could not verify the M-Pesa payment yet.' });
+            }
+        }
+        if (donation.provider === 'card' && availableMethods().card) {
+            try {
+                return response.json({ status: await updatePesapalDonation(donation) });
+            } catch (error) {
+                console.error('Unable to verify Pesapal card donation:', error.message);
+                return response.status(502).json({ error: 'We could not verify the card payment yet.' });
+            }
         }
 
         if (donation.provider === 'binance' && availableMethods().binance) {
@@ -614,37 +764,48 @@ function createApp(options = {}) {
         return response.json({ status: 'pending' });
     });
 
-    app.post('/api/payments/flutterwave/webhook', async (request, response) => {
-        const receivedHash = request.get('verif-hash');
-        if (!compareSecrets(receivedHash, config.FLW_SECRET_HASH || '')) {
-            return response.status(401).json({ error: 'Invalid webhook signature.' });
+    app.post('/api/payments/mpesa/callback', async (request, response) => {
+        const checkoutRequestId = request.body?.Body?.stkCallback?.CheckoutRequestID;
+        if (typeof checkoutRequestId !== 'string' || !checkoutRequestId) {
+            return response.status(400).json({ ResultCode: 1, ResultDesc: 'Invalid callback details.' });
         }
-        const data = request.body?.data;
-        if (request.body?.event !== 'charge.completed' || !data
-            || !/^\d{1,20}$/.test(String(data.id))
-            || typeof data.tx_ref !== 'string') {
-            return response.status(200).json({ received: true });
-        }
-        const donation = getOnlineDonation.get(data.tx_ref);
-        if (!donation || !['mpesa', 'card'].includes(donation.provider)) {
-            return response.status(200).json({ received: true });
+        const donation = getDonationByProviderOrder.get('mpesa', checkoutRequestId);
+        if (!donation || donation.status !== 'pending') {
+            return response.json({ ResultCode: 0, ResultDesc: 'Callback acknowledged.' });
         }
         try {
-            const result = await providerJson(`${FLUTTERWAVE_API}/transactions/${encodeURIComponent(data.id)}/verify`, {
-                headers: { Authorization: `Bearer ${config.FLW_SECRET_KEY}` }
-            });
-            const payment = result.data;
-            const expectedAmount = donation.currency === 'KES' ? donation.amount_minor : donation.amount_minor / 100;
-            if (payment.status === 'successful' && payment.tx_ref === donation.reference
-                && payment.currency === donation.currency && Number(payment.amount) >= expectedAmount) {
-                markPaid.run(String(payment.id), donation.reference);
-            } else if (payment.status && !['pending', 'processing'].includes(payment.status)) {
-                markFailed.run(donation.reference);
-            }
-            return response.status(200).json({ received: true });
+            await updateMpesaDonation(donation);
+            return response.json({ ResultCode: 0, ResultDesc: 'Callback acknowledged.' });
         } catch (error) {
-            console.error('Unable to process Flutterwave webhook:', error.message);
-            return response.status(502).json({ error: 'Payment verification is temporarily unavailable.' });
+            console.error('Unable to verify Safaricom M-Pesa callback:', error.message);
+            return response.status(502).json({ ResultCode: 1, ResultDesc: 'Payment verification is temporarily unavailable.' });
+        }
+    });
+
+    app.all('/api/payments/pesapal/ipn', async (request, response) => {
+        const orderTrackingId = request.query.OrderTrackingId || request.body?.OrderTrackingId;
+        const merchantReference = request.query.OrderMerchantReference || request.body?.OrderMerchantReference;
+        const notificationType = request.query.OrderNotificationType || request.body?.OrderNotificationType;
+        const acknowledgement = {
+            orderNotificationType: notificationType || 'IPNCHANGE',
+            orderTrackingId: typeof orderTrackingId === 'string' ? orderTrackingId : '',
+            orderMerchantReference: typeof merchantReference === 'string' ? merchantReference : '',
+            status: 200
+        };
+        if (typeof orderTrackingId !== 'string' || typeof merchantReference !== 'string') {
+            return response.status(400).json({ ...acknowledgement, status: 500 });
+        }
+        const donation = getOnlineDonation.get(merchantReference);
+        if (!donation || donation.provider !== 'card' || donation.provider_order_id !== orderTrackingId) {
+            return response.json(acknowledgement);
+        }
+        if (donation.status !== 'pending') return response.json(acknowledgement);
+        try {
+            await updatePesapalDonation(donation);
+            return response.json(acknowledgement);
+        } catch (error) {
+            console.error('Unable to verify Pesapal IPN:', error.message);
+            return response.status(500).json({ ...acknowledgement, status: 500 });
         }
     });
 

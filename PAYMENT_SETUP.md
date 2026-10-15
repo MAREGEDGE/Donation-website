@@ -2,15 +2,15 @@
 
 The payment page offers these distinct routes:
 
-- **M-Pesa:** KES hosted checkout through Flutterwave.
-- **Visa/Mastercard:** USD hosted checkout through Flutterwave.
+- **M-Pesa:** KES STK Push directly through Safaricom Daraja.
+- **Visa/Mastercard:** USD hosted card checkout through Pesapal.
 - **PayPal:** USD checkout through PayPal Orders.
 - **Binance Pay:** USD donation value charged as USDT through Binance Pay.
 - **Bitcoin:** USD invoice paid in BTC through NOWPayments.
 - **ABSA bank transfer:** KES transfer, confirmed manually by the charity team.
 
-Flutterwave processes M-Pesa and Visa/Mastercard; PayPal, Binance Pay, and
-NOWPayments are separate merchant integrations. These services settle funds
+Safaricom processes M-Pesa and Pesapal processes Visa/Mastercard; PayPal,
+Binance Pay, and NOWPayments are separate merchant integrations. These services settle funds
 to their respective merchant accounts/wallets according to each account's
 settings; they do **not** all send funds directly to the ABSA account. Configure
 and verify withdrawal/settlement to the charity's account separately with each
@@ -48,22 +48,32 @@ JavaScript.
    Enter live credentials only in the Render service's environment settings;
    the Blueprint prompts for these secret values and does not store them in
    this repository:
-   - Flutterwave: `FLW_SECRET_KEY` and webhook `FLW_SECRET_HASH`.
+   - Safaricom Daraja: `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`,
+     `MPESA_SHORTCODE`, and `MPESA_PASSKEY`.
+   - Pesapal: `PESAPAL_CONSUMER_KEY`, `PESAPAL_CONSUMER_SECRET`, and the
+     registered `PESAPAL_IPN_ID`.
    - PayPal: live `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`.
    - Binance Pay: API secret and certificate serial number from a Binance Pay
      merchant account.
    - NOWPayments: production API key and IPN secret.
+   The Render Blueprint starts the new Safaricom and Pesapal integrations in
+   sandbox mode. Keep `MPESA_ENV=sandbox` and `PESAPAL_ENV=sandbox` while
+   testing; switch each to `live` in Render only after the matching production
+   merchant account and credentials are approved and a sandbox transaction
+   succeeds.
 5. In every merchant dashboard, configure ABSA settlement/payout details where
    that provider supports them. This is provider-account configuration, not a
    website setting. Some providers may hold funds in a merchant or crypto
    balance first; verify settlement eligibility, fees, currency conversion,
    and payout schedule. The separate ABSA bank-transfer option continues to
    require manual deposit confirmation.
-6. Configure provider webhooks to the public Netlify API paths after the
-   Netlify rewrite is deployed:
-   - Flutterwave:
-     `https://homecharityke.netlify.app/api/payments/flutterwave/webhook`
-   - NOWPayments:
+6. Register the Pesapal IPN URL
+   `https://homecharityke.netlify.app/api/payments/pesapal/ipn` with Pesapal
+   using API 3.0's `POST /api/URLSetup/RegisterIPN` endpoint and
+   `ipn_notification_type: "GET"`. Store the returned `ipn_id` as
+   `PESAPAL_IPN_ID` in Render. Safaricom's callback URL is supplied per STK
+   Push request and is generated from `PUBLIC_BASE_URL`.
+   Configure the NOWPayments webhook to:
      `https://homecharityke.netlify.app/api/payments/nowpayments/webhook`
 7. Test each live provider with an approved low-value transaction before
    advertising the method. Do not enter card details, payment PINs, or API
@@ -88,9 +98,12 @@ and checkout provider. Verify these in each provider's test mode and account
 dashboard before advertising them.
 
 Each online attempt is written to the local SQLite database as `pending`.
-Flutterwave returns are checked against Flutterwave's transaction verification
-API; Flutterwave webhooks are signature checked and verified with the API.
-PayPal orders are captured by the server and their returned amount, currency,
+M-Pesa STK Push results are queried directly from Safaricom using the recorded
+checkout request ID; callbacks only trigger that server-to-server verification.
+Pesapal card results are queried using the recorded order tracking ID and
+checked against the expected amount, currency, and donation reference. Pesapal
+IPNs are also verified against the Pesapal status API before updating a
+donation. PayPal orders are captured by the server and their returned amount, currency,
 reference, and order ID are checked. Binance Pay status is queried server to
 server. NOWPayments payment notifications are validated with the configured
 IPN HMAC secret and checked against the recorded order and USD amount. Only a
@@ -117,9 +130,10 @@ deposit appears.
   requirements. Do not claim donations are tax deductible unless authorized.
 
 References:
-[Flutterwave methods](https://developer.flutterwave.com/docs/payment-methods.md),
-[Flutterwave Standard](https://developer.flutterwave.com/docs/flutterwave-standard-1.md),
-[Flutterwave verification](https://developer.flutterwave.com/docs/transaction-verification.md),
+[Safaricom Daraja API portal](https://developer.safaricom.co.ke/),
+[Pesapal API 3.0](https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/api-reference),
+[Pesapal submit order](https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/submitorderrequest),
+[Pesapal transaction status](https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/gettransactionstatus),
 [PayPal OAuth](https://developer.paypal.com/api/rest/authentication/),
 [PayPal Orders API](https://developer.paypal.com/api/orders/v2),
 [Binance Pay create order](https://developers.binance.com/docs/binance-pay/merchant/order/create-order),
