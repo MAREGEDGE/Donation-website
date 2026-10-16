@@ -100,7 +100,8 @@ test('reports only payment methods whose provider credentials are configured', a
     const result = await response.json();
     const enabled = result.methods.filter((method) => method.enabled).map((method) => method.id);
 
-    assert.deepEqual(enabled, ['bank']);
+    assert.deepEqual(enabled, ['mpesa-send', 'bank']);
+    assert.equal(result.methods.find((method) => method.id === 'mpesa-send').currency, 'KES');
     assert.equal(result.methods.find((method) => method.id === 'mpesa').currency, 'KES');
     assert.equal(result.methods.find((method) => method.id === 'card').currency, 'USD');
 });
@@ -111,7 +112,27 @@ test('enables direct M-Pesa and Pesapal card checkout when their full credential
     const result = await response.json();
 
     assert.equal(result.methods.find((method) => method.id === 'mpesa').enabled, true);
+    assert.equal(result.methods.find((method) => method.id === 'mpesa-send').enabled, true);
     assert.equal(result.methods.find((method) => method.id === 'card').enabled, true);
+});
+
+test('keeps direct M-Pesa Send Money as manual instructions rather than online checkout', async (t) => {
+    let providerCalled = false;
+    const { baseUrl } = await startApp(t, async () => {
+        providerCalled = true;
+        return providerResponse({});
+    }, {
+        MPESA_CONSUMER_KEY: '',
+        MPESA_CONSUMER_SECRET: '',
+        MPESA_SHORTCODE: '',
+        MPESA_PASSKEY: ''
+    });
+    const response = await createPayment(baseUrl, { method: 'mpesa-send', amount: 500 });
+    const result = await response.json();
+
+    assert.equal(response.status, 400);
+    assert.match(result.error, /manual transfer instructions/);
+    assert.equal(providerCalled, false);
 });
 
 test('normalizes Kenyan M-Pesa numbers from both 07 and 01 mobile ranges', () => {

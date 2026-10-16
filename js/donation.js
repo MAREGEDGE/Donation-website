@@ -86,21 +86,28 @@
 
     function buttonLabel(method) {
         if (!method) return 'Choose a payment method';
-        return method.id === 'bank' ? 'Show bank transfer instructions' : `Continue to ${method.name}`;
+        if (method.id === 'bank') return 'Show bank transfer instructions';
+        if (method.id === 'mpesa-send') return 'Show M-Pesa instructions';
+        return `Continue to ${method.name}`;
     }
 
     function setMethodDetails(method) {
         const isBank = method.id === 'bank';
         const isMpesa = method.id === 'mpesa';
+        const isMpesaSend = method.id === 'mpesa-send';
+        const isManualTransfer = isBank || isMpesaSend;
         const donorNameInput = document.getElementById('donorName');
         const donorEmailInput = document.getElementById('email');
-        document.querySelector('.donor-name-group').hidden = isBank;
-        document.querySelector('.donor-email-group').hidden = isBank;
-        donorNameInput.required = !isBank;
-        donorEmailInput.required = !isBank;
+        document.querySelector('.donor-name-group').hidden = isManualTransfer;
+        document.querySelector('.donor-email-group').hidden = isManualTransfer;
+        donorNameInput.required = !isManualTransfer;
+        donorEmailInput.required = !isManualTransfer;
         phoneGroup.hidden = !isMpesa;
         phoneInput.required = isMpesa;
         transferInstructions.hidden = true;
+        document.getElementById('bankTransferDetails').hidden = !isBank;
+        document.getElementById('mpesaRecipientRow').hidden = !isMpesaSend;
+        document.getElementById('transferReferenceRow').hidden = !isBank;
 
         if (isBank) {
             document.getElementById('checkoutInfoTitle').textContent = 'Transfer directly to our ABSA account';
@@ -109,6 +116,19 @@
             document.getElementById('summaryMethod').textContent = 'Bank transfer donation';
             document.getElementById('paymentFeeSummary').textContent = 'Set by your bank';
             document.querySelector('.payment-footnote').textContent = 'The instructions are not proof of payment. The charity team must verify your deposit manually.';
+            document.getElementById('transferInstructionsTitle').textContent = 'Transfer to ABSA Bank Kenya';
+            document.getElementById('transferInstructionsDescription').textContent = 'Open your bank app or visit your bank and transfer the exact amount below. Put the donation reference in the transfer reference/narration field. The reference is generated in this browser and is not stored by the website.';
+            document.getElementById('transferReminder').textContent = 'The website cannot see your bank account or confirm that the transfer arrived. The charity team will verify the deposit manually.';
+        } else if (isMpesaSend) {
+            document.getElementById('checkoutInfoTitle').textContent = 'Send your donation directly with M-Pesa';
+            document.getElementById('checkoutInfoText').textContent = 'Use M-Pesa Send Money to send your chosen amount to +254700587281. Do not share your M-Pesa PIN with anyone.';
+            document.getElementById('paymentPromiseText').textContent = 'M-Pesa Send Money transfers are confirmed only after the charity team verifies receipt.';
+            document.getElementById('summaryMethod').textContent = 'M-Pesa Send Money donation';
+            document.getElementById('paymentFeeSummary').textContent = 'Shown by M-Pesa';
+            document.querySelector('.payment-footnote').textContent = 'Sending money does not automatically confirm your donation. The charity team will verify receipt manually.';
+            document.getElementById('transferInstructionsTitle').textContent = 'Send your donation with M-Pesa';
+            document.getElementById('transferInstructionsDescription').textContent = 'Open M-Pesa, choose Send Money, and send the exact donation amount below to this number.';
+            document.getElementById('transferReminder').textContent = 'Keep the Safaricom confirmation message. This website cannot verify the transfer automatically; your donation is confirmed only after the charity team checks receipt.';
         } else {
             document.getElementById('checkoutInfoTitle').textContent = 'Your payment is securely processed';
             document.getElementById('checkoutInfoText').textContent = isMpesa
@@ -162,7 +182,8 @@
                     method.enabled ? 'Available' : 'Setup required';
             });
 
-            const preferred = paymentOptions.find((input) => input.value === 'mpesa' && !input.disabled)
+            const preferred = paymentOptions.find((input) => input.value === 'mpesa-send' && !input.disabled)
+                || paymentOptions.find((input) => input.value === 'mpesa' && !input.disabled)
                 || paymentOptions.find((input) => input.value === 'card' && !input.disabled)
                 || paymentOptions.find((input) => !input.disabled);
             if (preferred) {
@@ -172,25 +193,35 @@
             }
         } catch (error) {
             paymentOptions.forEach((input) => {
-                if (input.value !== 'bank') input.disabled = true;
+                if (!['mpesa-send', 'bank'].includes(input.value)) input.disabled = true;
                 input.closest('.payment-option').querySelector('.method-state').textContent =
-                    input.value === 'bank' ? 'Available' : 'Unavailable';
+                    ['mpesa-send', 'bank'].includes(input.value) ? 'Available' : 'Unavailable';
             });
-            const bank = paymentOptions.find((input) => input.value === 'bank');
-            if (bank) {
-                bank.checked = true;
-                const fallback = {
+            const manualMethods = [
+                {
+                    id: 'mpesa-send',
+                    name: 'M-Pesa Send Money',
+                    currency: 'KES',
+                    enabled: true
+                },
+                {
                     id: 'bank',
                     name: 'Bank transfer',
                     currency: 'KES',
                     enabled: true
-                };
-                methods.set('bank', fallback);
-                updateAmountControls(fallback);
-                setMethodDetails(fallback);
+                }
+            ];
+            manualMethods.forEach((method) => methods.set(method.id, method));
+            const preferred = paymentOptions.find((input) => input.value === 'mpesa-send')
+                || paymentOptions.find((input) => input.value === 'bank');
+            if (preferred) {
+                preferred.checked = true;
+                const method = methods.get(preferred.value);
+                updateAmountControls(method);
+                setMethodDetails(method);
             }
             showMessage(
-                error.message || 'Online payment options are unavailable. You can still donate by bank transfer.',
+                `${error.message || 'Online payment options are unavailable.'} You can still donate by M-Pesa Send Money or bank transfer.`,
                 'pending'
             );
         }
@@ -350,8 +381,8 @@
             return;
         }
 
-        if (method.id === 'bank') {
-            const reference = createBankTransferReference();
+        if (['bank', 'mpesa-send'].includes(method.id)) {
+            const reference = method.id === 'bank' ? createBankTransferReference() : '';
             document.getElementById('transferAmount').textContent = formatAmount(amount, 'KES');
             document.getElementById('transferReference').textContent = reference;
             transferInstructions.hidden = false;

@@ -29,6 +29,10 @@
                             <span class="pay-card"><span class="pay-logo" aria-hidden="true">📱</span><span class="pay-name">M-Pesa</span><span class="pay-desc">KES · mobile money</span><span class="method-state">Checking availability…</span></span>
                         </label>
                         <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="mpesa-send" data-currency="KES">
+                            <span class="pay-card"><span class="pay-logo" aria-hidden="true">📲</span><span class="pay-name">M-Pesa Send Money</span><span class="pay-desc">KES · send directly to our number</span><span class="method-state">Checking availability…</span></span>
+                        </label>
+                        <label class="payment-option">
                             <input type="radio" name="paymentMethod" value="card" data-currency="USD">
                             <span class="pay-card"><span class="pay-logo" aria-hidden="true">💳</span><span class="pay-name">Visa / Mastercard</span><span class="pay-desc">USD · debit or credit card</span><span class="method-state">Checking availability…</span></span>
                         </label>
@@ -97,16 +101,19 @@
                 <p class="payment-footnote">Only provider-verified online transactions are confirmed as paid. Bank transfers require manual confirmation.</p>
 
                 <section id="transferInstructions" class="transfer-instructions" aria-labelledby="transferInstructionsTitle" aria-live="polite" hidden>
-                    <h2 id="transferInstructionsTitle">Transfer to ABSA Bank Kenya</h2>
-                    <p>Open your bank app or visit your bank and transfer the exact amount below. Put the donation reference in the transfer reference/narration field. The reference is generated in this browser and is not stored by the website.</p>
+                    <h2 id="transferInstructionsTitle">Transfer instructions</h2>
+                    <p id="transferInstructionsDescription"></p>
                     <dl class="bank-account-details">
-                        <div><dt>Bank</dt><dd>ABSA Bank Kenya</dd></div>
-                        <div><dt>Account holder</dt><dd>Charity Donation Fund</dd></div>
-                        <div><dt>Account number</dt><dd>2051536951</dd></div>
+                        <div id="bankTransferDetails">
+                            <div><dt>Bank</dt><dd>ABSA Bank Kenya</dd></div>
+                            <div><dt>Account holder</dt><dd>Charity Donation Fund</dd></div>
+                            <div><dt>Account number</dt><dd>2051536951</dd></div>
+                        </div>
+                        <div id="mpesaRecipientRow" hidden><dt>M-Pesa number</dt><dd>+254700587281</dd></div>
                         <div><dt>Donation amount</dt><dd id="transferAmount"></dd></div>
-                        <div><dt>Payment reference</dt><dd id="transferReference" class="donation-reference"></dd></div>
+                        <div id="transferReferenceRow"><dt>Payment reference</dt><dd id="transferReference" class="donation-reference"></dd></div>
                     </dl>
-                    <p class="transfer-reminder"><strong>Important:</strong> The website cannot see your bank account or confirm that the transfer arrived. The charity team will verify the deposit manually.</p>
+                    <p class="transfer-reminder"><strong>Important:</strong> <span id="transferReminder"></span></p>
                 </section>
             </form>
 

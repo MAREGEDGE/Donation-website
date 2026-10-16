@@ -1156,6 +1156,27 @@ footer .text:active{
     border-bottom: 0;
 }
 
+.bank-account-details > #bankTransferDetails {
+    display: block;
+    padding: 0;
+    border: 0;
+}
+
+.bank-account-details > #bankTransferDetails > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 11px 13px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.bank-account-details > #bankTransferDetails[hidden],
+.bank-account-details > #mpesaRecipientRow[hidden],
+.bank-account-details > #transferReferenceRow[hidden] {
+    display: none;
+}
+
 .bank-account-details dt {
     color: #6b7280;
     font-size: 0.82rem;
@@ -1381,26 +1402,31 @@ footer .text:active{
 }
 
 .payment-option:nth-child(2) .pay-card {
+    border-top: 4px solid #16a34a;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(22, 163, 74, 0.04) 100%);
+}
+
+.payment-option:nth-child(3) .pay-card {
     border-top: 4px solid #f59e0b;
     background: linear-gradient(180deg, #ffffff 0%, rgba(245, 158, 11, 0.04) 100%);
 }
 
-.payment-option:nth-child(3) .pay-card {
+.payment-option:nth-child(4) .pay-card {
     border-top: 4px solid #ef4444;
     background: linear-gradient(180deg, #ffffff 0%, rgba(239, 68, 68, 0.04) 100%);
 }
 
-.payment-option:nth-child(4) .pay-card {
+.payment-option:nth-child(5) .pay-card {
     border-top: 4px solid #3b82f6;
     background: linear-gradient(180deg, #ffffff 0%, rgba(59, 130, 246, 0.04) 100%);
 }
 
-.payment-option:nth-child(5) .pay-card {
+.payment-option:nth-child(6) .pay-card {
     border-top: 4px solid #0f766e;
     background: linear-gradient(180deg, #ffffff 0%, rgba(15, 118, 110, 0.04) 100%);
 }
 
-.payment-option:nth-child(6) .pay-card {
+.payment-option:nth-child(7) .pay-card {
     border-top: 4px solid #1d4ed8;
     background: linear-gradient(180deg, #ffffff 0%, rgba(29, 78, 216, 0.04) 100%);
 }

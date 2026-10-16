@@ -16,6 +16,7 @@ const MAX_KES_AMOUNT = 10_000_000;
 const MAX_USD_CENTS = 1_000_000;
 const PAYMENT_METHODS = [
     { id: 'mpesa', name: 'M-Pesa', currency: 'KES', detail: 'Secure M-Pesa checkout' },
+    { id: 'mpesa-send', name: 'M-Pesa Send Money', currency: 'KES', detail: 'Send directly to our M-Pesa number' },
     { id: 'card', name: 'Visa / Mastercard', currency: 'USD', detail: 'Secure card checkout' },
     { id: 'paypal', name: 'PayPal', currency: 'USD', detail: 'Pay with your PayPal account' },
     { id: 'binance', name: 'Binance Pay', currency: 'USD', detail: 'Paid in USDT at Binance checkout' },
@@ -209,6 +210,7 @@ function createApp(options = {}) {
                 config.MPESA_SHORTCODE,
                 config.MPESA_PASSKEY
             ),
+            'mpesa-send': true,
             card: hasCredentials(
                 config.PESAPAL_CONSUMER_KEY,
                 config.PESAPAL_CONSUMER_SECRET,
@@ -635,7 +637,10 @@ function createApp(options = {}) {
         const parsed = parseDonation(request.body);
         if (parsed.error) return response.status(400).json({ error: parsed.error });
         const donation = parsed.value;
-        if (!availableMethods()[donation.method] || donation.method === 'bank') {
+        if (['mpesa-send', 'bank'].includes(donation.method)) {
+            return response.status(400).json({ error: 'This payment method uses manual transfer instructions, not online checkout.' });
+        }
+        if (!availableMethods()[donation.method]) {
             return response.status(503).json({ error: 'This payment method is not configured yet. Please choose another method.' });
         }
 

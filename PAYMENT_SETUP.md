@@ -2,7 +2,8 @@
 
 The payment page offers these distinct routes:
 
-- **M-Pesa:** KES STK Push directly through Safaricom Daraja.
+- **M-Pesa Send Money:** KES donations sent manually to +254700587281 and verified by the charity team.
+- **M-Pesa STK Push:** KES checkout through Safaricom Daraja, when merchant credentials are configured.
 - **Visa/Mastercard:** USD hosted card checkout through Pesapal.
 - **PayPal:** USD checkout through PayPal Orders.
 - **Binance Pay:** USD donation value charged as USDT through Binance Pay.
@@ -22,6 +23,12 @@ Provider checkout options remain marked **Setup required** until the matching
 server credentials are configured. No card details or payment PINs are
 collected by this website. Never place provider secrets in HTML or browser
 JavaScript.
+
+M-Pesa Send Money is available without Daraja credentials. The donor sends
+money to +254700587281 using the M-Pesa app or menu; the website cannot verify
+this transfer automatically, so the charity team must confirm receipt. This is
+separate from Daraja STK Push, which requires an approved Paybill/Till and live
+credentials.
 
 ## Configure providers
 
@@ -79,7 +86,9 @@ JavaScript.
    Configure the NOWPayments webhook to:
      `https://homecharityke.netlify.app/api/payments/nowpayments/webhook`
 7. Test each live provider with an approved low-value transaction before
-   advertising the method. Do not enter card details, payment PINs, or API
+   advertising the method. Manually verify M-Pesa Send Money receipts against
+   the recipient account; never treat the donor's instructions or a screenshot
+   as automatic confirmation. Do not enter card details, payment PINs, or API
    secrets into the website or chat.
 8. For local development only, copy `.env.example` to `.env`, keep it private,
    and use sandbox credentials. Install, test, and run:
